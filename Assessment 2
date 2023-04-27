@@ -1,0 +1,97 @@
+/* For Assessment 2 I have created LWC Component Below are all the files*/
+
+/* Account Class */
+
+public with sharing class getAccount {
+    @AuraEnabled(cacheable=true)
+    public static List<Account> getRecentAccount(){
+        return [SELECT Id,Name,Phone,createdDate FROM Account ORDER BY CreatedDate DESC LIMIT 10];
+        
+    }
+
+}
+
+/* HTML file */
+
+<template>
+
+    <lightning-card title="Get Recent Accounts">
+        <div class="slds-p-around_medium">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Account Id</th>
+                        <th>Account Name</th>
+                        <th>Account Phone</th>
+                        <th>Account createdDate</th>
+    
+    
+    
+                    </tr>
+    
+    
+                </thead>
+                <tbody>
+                    <template if:true={result}>
+                        <template for:each={result} for:item="item">
+                            <tr key={item.id}>
+                                <td>{item.Id}</td>
+                                <td>{item.Name}</td>
+                                <td>{item.Phone}</td>
+                                <td>{item.createdDate}</td>
+                            </tr>
+                        </template>
+    
+                    </template>
+                    <template if:false={result}>
+                        <p>There are no Accounts !!</p>
+                    </template>
+    
+    
+                </tbody>
+            </table>
+        </div>
+    </lightning-card>
+    
+</template>
+
+/* Javascript File */
+
+import { LightningElement, wire } from 'lwc';
+import getRecentAccount from '@salesforce/apex/getAccount.getRecentAccount'
+
+
+export default class GetRecentAccount extends LightningElement {
+
+    result;
+
+    @wire(getRecentAccount)
+    getaccounts({ data, error }) {
+        if (data) {
+
+            this.result = data;
+            console.log(' this.result****', this.result)
+
+        }
+        if (error) {
+            console.error( 'error ', error);
+        }
+    }
+
+}
+
+/* meta.xml file */
+
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>56.0</apiVersion>
+    <isExposed>true</isExposed>
+    <targets>
+
+      
+        <target>lightning__AppPage</target>
+
+
+
+    </targets>
+</LightningComponentBundle>
