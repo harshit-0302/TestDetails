@@ -1,0 +1,44 @@
+/* For this Assessment I have created Trigger below is the TriggerHandler and Trigger code*/
+
+public class CountOfContactOnAccount {
+    
+    public static void countOnAccount(List<Contact> conId){
+        
+        List<ID> accIds=new List<ID>();
+        for(Contact con : conId){
+            accIds.add(con.AccountId);
+        }
+        
+        List<Account> accContact = [select Id, Name,(select Id from contacts)from Account where Id IN :accIds ];
+        
+        List<Account> updatedList = new List<Account>();
+        
+        for(Account acc :accContact){
+            List<Contact> con = acc.contacts;
+            acc.Number_of_Contacts__c = con.size();
+            updatedList.add(acc);
+            
+        }
+        if(!updatedList.isEmpty()){
+            update updatedList;
+        }
+        
+    }
+    
+}
+
+/*Below is the Trigger*/
+
+trigger CountOfContact on Contact (after insert, after update, after delete) {
+    
+    if(Trigger.isAfter){
+        
+        if(Trigger.isInsert || Trigger.isUpdate){
+            CountOfContactOnAccount.countOnAccount(Trigger.New);
+        }else if(Trigger.isDelete){
+            CountOfContactOnAccount.countOnAccount(Trigger.Old);
+
+        }
+    }
+    
+}
