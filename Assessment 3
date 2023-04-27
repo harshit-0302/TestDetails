@@ -1,0 +1,24 @@
+/* Below is the Assessment 3 Code for HTTP Callout */
+
+public class basicHttpCallout {
+    
+    private static final String CALLOUTAPINAME='https://postman-echo.com';
+
+    @AuraEnabled
+    public static String getBasicCallout(){
+        Http http = new Http();
+        HttpRequest request = new HttpRequest();
+        request.setEndpoint(CALLOUTAPINAME + '/get?foo1=bar1&foo2=bar2');
+        request.setMethod('GET');
+        
+        HttpResponse response = http.send(request);
+       
+        if(response.getStatusCode() == 200) {
+            System.debug('response'+response.getBody());
+            return response.getBody();
+        }
+        return '';
+
+    }
+    
+}
